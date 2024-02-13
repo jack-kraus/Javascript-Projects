@@ -31,9 +31,26 @@ function Vector(x, y) {
         this.y /= current_length;
     }
 
+    this.normal = function() {
+        const current_length = Math.sqrt(this.x ** 2 + this.y ** 2);
+        return new Vector(this.x / current_length, this.y / current_length);
+    }
+
     this.scalar = function(amount) {
         this.x *= amount;
         this.y *= amount;
+    }
+
+    this.dot = function(other) {
+        return this.x * other.x + this.y * other.y;
+    }
+
+    this.reflect = function(other) {
+        const nother = other.normal();
+        const dot = this.dot(nother);
+
+        this.x -= 2 * dot * nother.x;
+        this.y -= 2 * dot * nother.y;
     }
 }
 
@@ -107,13 +124,12 @@ function GameArea() {
     }
 
     // collision
-    this.collision = function(x, y, radius) {
+    this.collision = function(other, pos) {
         const canvas_bound = this.canvas.getBoundingClientRect();
-
-        if (x > canvas_bound.right - canvas_bound.left - radius) return new Vector(-1, 0);
-        else if (x < radius) return new Vector(1, 0);
-        else if (y < radius) return new Vector(0, 1);
-        else if (y > canvas_bound.bottom - canvas_bound.top - radius) return new Vector(0, -1);
+        if (pos.x > canvas_bound.right - canvas_bound.left - other.radius) return new Vector(-1, 0);
+        else if (pos.x < other.radius) return new Vector(1, 0);
+        else if (pos.y < other.radius) return new Vector(0, 1);
+        else if (pos.y > canvas_bound.bottom - canvas_bound.top - other.radius) return new Vector(0, -1);
         else return undefined;
     }
 }
@@ -148,19 +164,16 @@ function Ball(x, y, radius, color) {
     }
 
     this.move = function() {
-        let newXCollision = myGameArea.collision(this.pos.x + this.speed, this.pos.y, this.radius);
-        if (newXCollision !== undefined) {
-            console.log("hello");
-            newXCollision = myGameArea.collision(this.pos.x + Math.sign(this.speed.x), this.pos.y, this.radius);
-            while (newXCollision === undefined) {
-                this.pos.x += Math.sign(this.speed.x);
-                newXCollision = myGameArea.collision(this.pos.x + Math.sign(this.speed.x), this.pos.y, this.radius);
+        const collision = myGameArea.collision(this, this.pos.sum(this.speed));
+        if (collision) {
+            while (!myGameArea.collision(this, this.pos.sum(this.speed.normal()))) {
+                this.pos.add(this.speed.normal());
             }
-            this.speed.x = 0;
+            this.speed.reflect(collision);
         }
-        this.pos.x += this.speed.x;
-
-        this.pos.y += this.speed.y;
+        else {
+            this.pos.add(this.speed);
+        }
     }
 }
 
