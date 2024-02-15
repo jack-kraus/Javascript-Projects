@@ -1,5 +1,5 @@
 import { Vector, intersect } from "./vector.js";
-import { cn } from "./data.js";
+import { cn, strokeToScore } from "./data.js";
 
 export class Hole {
     constructor (level, x, y, radius) {
@@ -47,10 +47,7 @@ export class Ball {
             this.speed.scalar(0);
         }
         
-        // check win
-        if (this.level.hole.collision(this) && this.speed.length()===0 && this.level.hole.pos.difference(this.pos).length() < cn.hole_diff) {
-            alert(`Won in ${this.level.strokes} strokes`);
-        } 
+        this.checkWin();
     }
 
     draw() {
@@ -76,6 +73,7 @@ export class Ball {
     }
 
     move() {
+        if (this.level.done) return;
         let collision = this.level.game.collision(this.pos, this.pos.sum(this.speed));
         if (collision) {
             while (!this.level.game.collision(this.pos, this.pos.sum(this.speed.normal()))) {
@@ -87,6 +85,16 @@ export class Ball {
         }
         else {
             this.pos.add(this.speed);
+        }
+    }
+
+    checkWin() {
+        // check win
+        console.log("win");
+        if (this.level.hole.collision(this) && this.speed.length()===0 && this.level.hole.pos.difference(this.pos).length() < cn.hole_diff) {
+            const par_label = document.getElementById("par_label");
+            par_label.innerText = `Completed with a ${strokeToScore(this.level.strokes, this.level.par)}`;
+            document.getElementById("next_level").disabled = false; 
         }
     }
 }
@@ -181,12 +189,12 @@ export class GameArea {
         this.mouseEnd.y = e.pageY - canvas_bound.top;
     }
     releaseMouse() {
-        if (this.level.ball.speed.length() === 0) {
-            const diff = this.mouseEnd.difference(this.mouseStart)
+        const diff = this.mouseEnd.difference(this.mouseStart);
+        if (this.level.ball.speed.length() === 0 && diff.length() > this.level.ball.radius) {
             diff.scalar(0.3);
             this.level.ball.speed.add(diff);
             this.level.strokes++;
-            const stroke_label = document.getElementsByClassName("stroke_label")[0];
+            const stroke_label = document.getElementById("stroke_label");
             
             stroke_label.innerText = `Strokes: ${this.level.strokes}`;
         }

@@ -8,5 +8,8 @@
     "start": "http-server -c-1 -p 8081"
   },
   "author": "Jack Kraus",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
 }

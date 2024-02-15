@@ -9,10 +9,13 @@
         <script type="module">
             import { startGame } from "./js/mini_golf.js";
             window.onload = startGame;
+            document.getElementById("next_level").onclick = startGame;
         </script>
     </head>
 <body>
     <h1>Mini Golf</h1>
-    <p class="stroke_label">Strokes: 0</p>
+    <p id="stroke_label">Strokes: 0</p>
+    <p id="par_label">Par: 0</p>
+    <button id="next_level">Next Level</button>
 </body>
 </html>

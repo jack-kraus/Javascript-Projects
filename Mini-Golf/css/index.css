@@ -2,3 +2,8 @@ canvas {
     border: 1px solid #d3d3d3;
     background-color: #abff4a;
 }
+
+table, th, td {
+    border: 1px solid;
+    min-width: 100px;
+}
