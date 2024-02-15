@@ -3,15 +3,16 @@
     <head>
         <title>Mini Golf</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <style>
-            canvas {
-                border:1px solid #d3d3d3;
-                background-color: #f1f1f1;
-            }
-        </style>
-        <script src="js/mini_golf.js"></script>
+        <link href="js/mini_golf.js">
+        <link rel="stylesheet" href="css/index.css">
+        <link rel="shortcut icon" href="assets/favicon.ico">
+        <script type="module">
+            import { startGame } from "./js/mini_golf.js";
+            window.onload = startGame;
+        </script>
     </head>
-<body onload="startGame()">
+<body>
     <h1>Mini Golf</h1>
+    <p class="stroke_label">Strokes: 0</p>
 </body>
 </html>

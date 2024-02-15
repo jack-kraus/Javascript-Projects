@@ -1,0 +1,12 @@
+{
+  "name": "mini-golf",
+  "version": "1.0.0",
+  "description": "A simple mini golf game",
+  "main": "mini-golf.js",
+  "type": "module",
+  "scripts": {
+    "start": "http-server -c-1 -p 8081"
+  },
+  "author": "Jack Kraus",
+  "license": "MIT"
+}

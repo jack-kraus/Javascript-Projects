@@ -1,213 +1,33 @@
-var myGamePiece;
+import { Vector } from "./vector.js";
+import { Hole, Ball, Polygon, GameArea } from "./components.js";
+import { level_1 } from "./data.js";
 
-function Vector(x, y) {
-    this.x = x;
-    this.y = y;
-
-    this.add = function(other) {
-        this.x += other.x;
-        this.y += other.y;
-    }
-
-    this.sum = function(other) {
-        return new Vector(this.x + other.x, this.y + other.y);
-    }
-
-    this.difference = function(other) {
-        return new Vector(this.x - other.x, this.y - other.y);
-    }
-
-    this.clamp_length = function(length) {
-        const current_length = Math.sqrt(this.x ** 2 + this.y ** 2);
-        if (current_length > length) {
-            this.x *= (length / current_length);
-            this.y *= (length / current_length);
-        }
-    }
-
-    this.normalize = function() {
-        const current_length = Math.sqrt(this.x ** 2 + this.y ** 2);
-        this.x /= current_length;
-        this.y /= current_length;
-    }
-
-    this.normal = function() {
-        const current_length = Math.sqrt(this.x ** 2 + this.y ** 2);
-        return new Vector(this.x / current_length, this.y / current_length);
-    }
-
-    this.scalar = function(amount) {
-        this.x *= amount;
-        this.y *= amount;
-    }
-
-    this.dot = function(other) {
-        return this.x * other.x + this.y * other.y;
-    }
-
-    this.reflect = function(other) {
-        const nother = other.normal();
-        const dot = this.dot(nother);
-
-        this.x -= 2 * dot * nother.x;
-        this.y -= 2 * dot * nother.y;
-    }
-}
-
-
-function startGame() {
-    myGameArea.start();
-    myGamePiece = new Ball(30, 30, 10, "white");
-    myGamePiece.draw();
-}
-
-/* var myGameArea = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
-        this.context = this.canvas.getContext("2d");
-        document.body.append(this.canvas);
-        this.interval = setInterval(updateGameArea, 20);
-    },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-} */
-
-function GameArea() {
-    this.mouseStart = undefined;
-    this.mouseEnd = undefined;
-
-    this.canvas = document.createElement("canvas");
-    this.start = function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
-        this.ctx = this.canvas.getContext("2d");
-        document.body.append(this.canvas);
-        this.interval = setInterval(updateGameArea, 20);
-    }
-    this.clear = function() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // draw line
-        if (this.mouseStart === undefined) return;
-        const end_point = this.mouseEnd.difference(this.mouseStart)
-        end_point.clamp_length(60);
-        end_point.add(myGamePiece.pos);
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(myGamePiece.pos.x, myGamePiece.pos.y);
-        this.ctx.lineTo(end_point.x, end_point.y);
-        this.ctx.stroke();
-    }
+export function startGame() {
+    var level = data_to_level(level_1);
     
-    // Mouse movement
-    this.pressMouse = function(e) {
-        const canvas_bound = this.canvas.getBoundingClientRect();
-        this.mouseStart = new Vector(e.pageX - canvas_bound.left, e.pageY - canvas_bound.top);
-        this.mouseEnd = new Vector(e.pageX - canvas_bound.left, e.pageY - canvas_bound.top);
-    }
-    this.updateMouse = function(e) {
-        if (this.mouseStart === undefined) return;
-        const canvas_bound = this.canvas.getBoundingClientRect();
-        this.mouseEnd.x = e.pageX - canvas_bound.left;
-        this.mouseEnd.y = e.pageY - canvas_bound.top;
-    }
-    this.releaseMouse = function() {
-        const diff = this.mouseEnd.difference(this.mouseStart)
-        diff.scalar(0.3);
-        myGamePiece.speed.add(diff);
+    document.addEventListener("mousemove", 
+        level.game.updateMouse.bind(level.game),
+        false);
 
-        this.mouseStart = undefined;
-        this.mouseEnd = undefined;
-    }
-
-    // collision
-    this.collision = function(other, pos) {
-        const canvas_bound = this.canvas.getBoundingClientRect();
-        if (pos.x > canvas_bound.right - canvas_bound.left - other.radius) return new Vector(-1, 0);
-        else if (pos.x < other.radius) return new Vector(1, 0);
-        else if (pos.y < other.radius) return new Vector(0, 1);
-        else if (pos.y > canvas_bound.bottom - canvas_bound.top - other.radius) return new Vector(0, -1);
-        else return undefined;
-    }
+    document.addEventListener("mousedown", 
+        level.game.pressMouse.bind(level.game),
+        false);
+    document.addEventListener("mouseup", 
+        level.game.releaseMouse.bind(level.game),
+        false);
 }
 
-var myGameArea = new GameArea();
+function data_to_level(level_data) {
+    const level = {};
+    level.game = new GameArea(level, level_data.game.width, level_data.game.height);
+    level.game.start();
 
-function updateGameArea() {
-    myGameArea.clear();
-    myGamePiece.update();
-    myGamePiece.draw();
+    level.ball = new Ball(level, level_data.ball.x, level_data.ball.y, level_data.ball.radius, level_data.ball.color);
+    level.hole = new Hole(level, level_data.hole.x, level_data.hole.y, level_data.hole.radius);
+    level.polygons = level_data.polygons.map(
+        (polygon) => new Polygon(level, polygon.color, polygon.data.map((item) => new Vector(item[0], item[1]) ))
+    );
+
+    level.strokes = 0;
+    return level;
 }
-
-function Ball(x, y, radius, color) {
-    this.pos = new Vector(x, y);
-    this.speed = new Vector(0, 0);
-    this.radius = radius;
-    this.color = color;
-    
-    this.ctx = myGameArea.ctx;
-
-    this.update = function() {
-        this.move();
-        this.speed.scalar(0.9);
-    }
-
-    this.draw = function() {
-        this.ctx.beginPath();
-        this.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
-        this.ctx.stroke();
-    }
-
-    this.move = function() {
-        const collision = myGameArea.collision(this, this.pos.sum(this.speed));
-        if (collision) {
-            while (!myGameArea.collision(this, this.pos.sum(this.speed.normal()))) {
-                this.pos.add(this.speed.normal());
-            }
-            this.speed.reflect(collision);
-        }
-        else {
-            this.pos.add(this.speed);
-        }
-    }
-}
-
-function isKeyDown(key) {
-    if (key in keysDown) return keysDown[key];
-    return false;
-}
-
-var keysDown = {"a" : false, "d" : false};
-
-document.addEventListener('keydown', function(event) {
-    if (event.defaultPrevented) {
-    return; // Do nothing if the event was already processed
-  }
-
-  if (event.key in keysDown) keysDown[event.key] = true;
-});
-
-document.addEventListener('keyup', function(event) {
-    if (event.defaultPrevented) {
-    return; // Do nothing if the event was already processed
-  }
-
-  if (event.key in keysDown) keysDown[event.key] = false;
-});
-
-var mouseLocation = [0,0];
-document.addEventListener("mousemove", 
-    myGameArea.updateMouse.bind(myGameArea),
-    false);
-
-document.addEventListener("mousedown", 
-    myGameArea.pressMouse.bind(myGameArea),
-    false);
-document.addEventListener("mouseup", 
-    myGameArea.releaseMouse.bind(myGameArea),
-    false);
