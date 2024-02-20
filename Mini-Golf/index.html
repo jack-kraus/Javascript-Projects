@@ -6,16 +6,19 @@
         <link href="js/mini_golf.js">
         <link rel="stylesheet" href="css/index.css">
         <link rel="shortcut icon" href="assets/favicon.ico">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script type="module">
             import { startGame } from "./js/mini_golf.js";
             window.onload = startGame;
-            document.getElementById("next_level").onclick = startGame;
+            document.getElementById("next_level").onclick = (event) => { startGame(); event.target.disabled = true; console.log("balls"); };
         </script>
     </head>
 <body>
     <h1>Mini Golf</h1>
     <p id="stroke_label">Strokes: 0</p>
     <p id="par_label">Par: 0</p>
-    <button id="next_level">Next Level</button>
+    <div id="content_div"></div>
+    <button id="next_level" disabled="true">Next Level</button>
+    <input id="color_picker" type="color"></input>
 </body>
 </html>

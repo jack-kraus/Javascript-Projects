@@ -24,12 +24,13 @@ export class Hole {
 }
 
 export class Ball {
-    constructor (level, x, y, radius, color) {
+    constructor (level, x, y, radius, color, finishLevel) {
         this.pos = new Vector(x, y);
         this.speed = new Vector(0, 0);
         this.radius = radius;
         this.color = color;
         
+        this.finishLevel = finishLevel;
         this.ctx = level.game.ctx;
         this.level = level;
     }
@@ -52,7 +53,7 @@ export class Ball {
 
     draw() {
         // draw pointer
-        if (this.level.game.mouseStart !== undefined) {
+        if (this.level.game.mouseStart !== undefined && !this.level.won) {
             const end_point = this.level.game.mouseEnd.difference(this.level.game.mouseStart);
             end_point.clamp_length(60);
             end_point.add(this.pos);
@@ -67,13 +68,13 @@ export class Ball {
         
         this.ctx.beginPath();
         this.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI, false);
-        this.ctx.fillStyle = this.color;
+        const color = document.getElementById("color_picker").value;
+        this.ctx.fillStyle = color;
         this.ctx.fill();
-        this.ctx.stroke();
     }
 
     move() {
-        if (this.level.done) return;
+        if (this.level.won) return;
         let collision = this.level.game.collision(this.pos, this.pos.sum(this.speed));
         if (collision) {
             while (!this.level.game.collision(this.pos, this.pos.sum(this.speed.normal()))) {
@@ -90,11 +91,11 @@ export class Ball {
 
     checkWin() {
         // check win
-        console.log("win");
+        if (this.level.won) return;
         if (this.level.hole.collision(this) && this.speed.length()===0 && this.level.hole.pos.difference(this.pos).length() < cn.hole_diff) {
-            const par_label = document.getElementById("par_label");
-            par_label.innerText = `Completed with a ${strokeToScore(this.level.strokes, this.level.par)}`;
-            document.getElementById("next_level").disabled = false; 
+            this.finishLevel(this.level);
+            this.speed.scalar(0);
+            this.pos = this.level.hole.pos.copy();
         }
     }
 }
@@ -131,7 +132,6 @@ export class Polygon {
 
         // convert to refular draw
         this.ctx.globalCompositeOperation='source-over';
-        this.ctx.stroke();
     }
 
     collision(pos1, pos2) {
@@ -157,11 +157,14 @@ export class GameArea {
         this.canvas.width = width;
         this.canvas.height = height;
         this.ctx = this.canvas.getContext("2d");
+        
+
+        // fade
+        this.fade = 0;
     }
 
-    
     start() {
-        document.body.append(this.canvas);
+        document.getElementById("content_div").append(this.canvas);
         this.interval = setInterval(this.updateGameArea.bind(this), 20);
     }
 
@@ -174,6 +177,14 @@ export class GameArea {
             let polygon = this.level.polygons[i];
             polygon.draw(i === 0);
         }
+    }
+
+    drawFade() {
+        if (this.level.won) {
+            this.fade = Math.min(this.fade + 0.05, 1);
+        }
+        this.ctx.fillStyle = `rgba(0,0,0,${this.fade})`;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     
     // Mouse movement
@@ -190,15 +201,13 @@ export class GameArea {
     }
     releaseMouse() {
         const diff = this.mouseEnd.difference(this.mouseStart);
-        if (this.level.ball.speed.length() === 0 && diff.length() > this.level.ball.radius) {
+        if (this.level.ball.speed.length() === 0 && diff.length() > this.level.ball.radius && !this.level.won) {
             diff.scalar(0.3);
             this.level.ball.speed.add(diff);
             this.level.strokes++;
             const stroke_label = document.getElementById("stroke_label");
-            
-            stroke_label.innerText = `Strokes: ${this.level.strokes}`;
+            stroke_label.innerHTML = `Strokes: ${this.level.strokes}`;
         }
-
         this.mouseStart = undefined;
         this.mouseEnd = undefined;
     }
@@ -218,5 +227,6 @@ export class GameArea {
         this.level.ball.update();
         this.level.hole.draw();
         this.level.ball.draw();
+        this.drawFade();        
     }
 }

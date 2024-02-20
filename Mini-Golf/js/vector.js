@@ -62,6 +62,10 @@ export class Vector {
         out.normalize();
         return out;
     }
+
+    copy() {
+        return new Vector(this.x, this.y);
+    }
 }
 
 // check if two line segments AB and CD intersect
