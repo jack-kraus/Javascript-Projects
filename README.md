@@ -1,2 +1,2 @@
-# Javascript-Projects
- A collection of Javascript projects to showcase my skills in the langauge
+# Mini-Golf Game
+A simple Mini-golf game using HTML, CSS, and JavaScript
