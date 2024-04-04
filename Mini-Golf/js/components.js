@@ -1,5 +1,5 @@
 import { Vector, intersect } from "./vector.js";
-import { cn, strokeToScore } from "./data.js";
+import { cn } from "./data.js";
 
 export class Hole {
     constructor (level, x, y, radius) {
@@ -154,11 +154,11 @@ export class GameArea {
         
         // set canavs content
         this.canvas = document.createElement("canvas");
+        this.canvas.aspectRatio = width / height;
         this.canvas.width = width;
         this.canvas.height = height;
         this.ctx = this.canvas.getContext("2d");
         
-
         // fade
         this.fade = 0;
     }
@@ -181,7 +181,8 @@ export class GameArea {
 
     drawFade() {
         if (this.level.won) {
-            this.fade = Math.min(this.fade + 0.05, 1);
+            // this.fade = Math.min(this.fade + 0.05, 1);
+            this.canvas.style.filter = "brightness(0)";
         }
         this.ctx.fillStyle = `rgba(0,0,0,${this.fade})`;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);

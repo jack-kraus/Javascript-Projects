@@ -1,9 +1,50 @@
+@font-face {
+    font-family: 'Cactron';
+    src: url('../assets/Cactron-Regular.otf') format('woff2'), /* Modern Browsers */
+         url('../assets/Cactron-Bold.otf') format('woff2'); /* Older Browsers */
+}
+
 canvas {
-    border: 1px solid #d3d3d3;
-    background-color: #abff4a;
+    transition: width 2s, height 2s, filter 1s;
+    border: 5px solid #000000;
+    background-color: #b8ff67bd;
+    object-fit: contain;
+    max-width: 100%;
+    filter : brightness(100%);
 }
 
 table, th, td {
     border: 1px solid;
     min-width: 100px;
+}
+
+.content_div {
+    display: flex;
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Vertically center items */
+    margin: 0; /* Remove default margin */
+    background-image: linear-gradient(rgb(134, 187, 216), rgb(134, 187, 216));
+    height: 100vh;
+}
+
+p, h1, button {
+    font-family: 'Cactron';
+}
+
+h1 {
+    color: white;
+    text-shadow: 0.1em 0.1em black;
+}
+
+.header {
+    width: 100vw;
+    height: 10vh;
+    display: flex;
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Vertically center items */
+    background-color : rgb(47, 72, 88);
 }
