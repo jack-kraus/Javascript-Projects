@@ -340,8 +340,8 @@ export class App {
         const table = $("<table></table>");
         $("#content_div").prepend(table);
         
-        const index_row = $("<tr><th>Hole</th></tr>");
-        const score_row = $("<tr><th>Score</th></tr>");
+        const index_row = $("<tr><td>Hole</td></tr>");
+        const score_row = $("<tr><td>Score</td></tr>");
 
         for (let i = 0; i < this.scores.length; i++) {
             index_row.append(`<td>${i+1}</td>`);
