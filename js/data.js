@@ -277,7 +277,7 @@ const level_7 = {
     tip : "Purple walls are sticky"
 }
 
-export const levels = [level_5, level_1, level_2, level_3, level_4, level_5, level_6, level_7];
+export const levels = [level_1, level_2, level_3, level_4, level_5, level_6, level_7];
 
 export function strokeToScore(strokes, par) {
     if (strokes === 1) return "Hole in One"
