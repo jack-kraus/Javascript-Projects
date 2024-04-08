@@ -10,18 +10,23 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script type="module">
             import { startGame } from "./js/mini_golf.js";
-            window.onload = startGame;
-            document.getElementById("next_level").onclick = (event) => { startGame(); event.target.disabled = true; console.log("balls"); };
+            $(document).ready(() =>  {
+                startGame();
+            });
         </script>
     </head>
 <body>
     <div class="header">
         <h1>Mini Golf</h1>
     </div>
-    <p id="stroke_label">Strokes: 0</p>
-    <p id="par_label">Par: 0</p>
+    
+    <div class="component">
+        <p id="stroke_label">Strokes: 0</p>
+        <p id="par_label">Par: 0</p>
+    </div>
+    
     <div id="content_div"></div>
+    <p class="component" id="tip_label">Shoot</p>
     <button id="next_level" disabled="true">Next Level</button>
-    <input id="color_picker" type="color" value="#ffffff"></input>
 </body>
 </html>

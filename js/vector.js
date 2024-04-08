@@ -17,6 +17,16 @@ export class Vector {
         return new Vector(this.x - other.x, this.y - other.y);
     }
 
+    minus_scalar(scalar) {
+        const length = this.length();
+        if (scalar > length) {
+            this.scalar(0);
+        }
+        else {
+            this.scalar((length-scalar)/length);
+        };
+    }
+
     clamp_length(length) {
         const current_length = Math.sqrt(this.x ** 2 + this.y ** 2);
         if (current_length > length) {
@@ -65,6 +75,10 @@ export class Vector {
 
     copy() {
         return new Vector(this.x, this.y);
+    }
+
+    angle() {
+        return Math.atan2(this.y, this.x) * 180 / Math.PI;
     }
 }
 

@@ -1,16 +1,26 @@
 @font-face {
     font-family: 'Cactron';
     src: url('../assets/Cactron-Regular.otf') format('woff2'), /* Modern Browsers */
-         url('../assets/Cactron-Bold.otf') format('woff2'); /* Older Browsers */
+        url('../assets/Cactron-Bold.otf') format('woff2'); /* Older Browsers */
 }
 
+@keyframes slide {
+    0% {
+        background-position: 0px 0px;
+    }
+    100% {
+        background-position: 512px 256px;
+    }
+  }
+
 canvas {
-    transition: width 2s, height 2s, filter 1s;
-    border: 5px solid #000000;
-    background-color: #b8ff67bd;
+    transition: filter 1s;
+    border: 5px solid #16437e;
+    border-radius: 5px;
+    background-color: #7ED348;
     object-fit: contain;
     max-width: 100%;
-    filter : brightness(100%);
+    filter : brightness(0%);
 }
 
 table, th, td {
@@ -27,17 +37,19 @@ body {
     flex-direction: column; /* Stack items vertically */
     align-items: center; /* Vertically center items */
     margin: 0; /* Remove default margin */
-    background-image: linear-gradient(rgb(134, 187, 216), rgb(134, 187, 216));
+    background-image: url("../assets/background.png");
+    background-color: #34aad1;
     height: 100vh;
+    animation: slide 10s linear infinite;
 }
 
-p, h1, button {
+table, p, h1, button {
     font-family: 'Cactron';
 }
 
 h1 {
-    color: white;
-    text-shadow: 0.1em 0.1em black;
+    color: #97e7f5;
+    text-shadow: 0.1em 0.1em #34aad1;
 }
 
 .header {
@@ -46,5 +58,60 @@ h1 {
     display: flex;
     align-items: center; /* Vertically center items */
     justify-content: center; /* Vertically center items */
-    background-color : rgb(47, 72, 88);
+    background-color : #16437e;
+}
+
+.component {
+    background-color : #16437e;
+    color: white;
+    border: 5px solid #16437e;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+}
+button {
+    background-color : #97e7f5;
+    color: #16437e;
+    border: 5px solid #16437e;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+}
+button:active {
+    background-color: #34aad1;
+}
+
+input {
+    height:1rem+10px;
+    border: none;
+}
+
+button:disabled {
+    background-color : gray;
+    color: black;
+    border: 5px solid gray;
+}
+button:disabled:active {
+    background-color : darkgray;
+}
+
+.content_div {
+    overflow: hidden;
+}
+
+p {
+    margin:0;
+    padding:0;
+}
+
+table {
+    margin: auto;
+    background-color: #97e7f5;
+    color: #16437e;
+    border: none;
+    border-collapse: collapse;
+    border: 5px solid #16437e;
+    border-radius: 5px;
+    text-align: center;
+    width: 75vw;
 }
