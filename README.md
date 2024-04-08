@@ -1,5 +1,6 @@
 # Mini-Golf Game
 A simple Mini-golf game using HTML, CSS, JavaScript, and JQuery
+
 [Play Now](https://jack-kraus.github.io/Mini-Golf-Game/)
 
 ## How to Play
