@@ -44,7 +44,7 @@ body {
 }
 
 table, p, h1, button {
-    font-family: 'Cactron';
+    font-family: 'Cactron', sans-serif;
 }
 
 h1 {
@@ -52,7 +52,7 @@ h1 {
     text-shadow: 0.1em 0.1em #34aad1;
 }
 
-.header {
+header {
     width: 100vw;
     height: 10vh;
     display: flex;
@@ -61,7 +61,7 @@ h1 {
     background-color : #16437e;
 }
 
-.component {
+section {
     background-color : #16437e;
     color: white;
     border: 5px solid #16437e;
@@ -114,4 +114,9 @@ table {
     border-radius: 5px;
     text-align: center;
     width: 75vw;
+}
+
+img {
+    width: 40px;
+    height: 40px;
 }
