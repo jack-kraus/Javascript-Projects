@@ -4,6 +4,16 @@
         url('../assets/Cactron-Bold.otf') format('woff2'); /* Older Browsers */
 }
 
+
+.fredoka {
+  font-family: "Fredoka", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
 @keyframes slide {
     0% {
         background-position: 0px 0px;
@@ -19,17 +29,22 @@ canvas {
     border-radius: 5px;
     background-color: #7ED348;
     object-fit: contain;
-    max-width: 100%;
     filter : brightness(0%);
+    max-width: 100%;
 }
 
 table, th, td {
     border: 1px solid;
-    min-width: 100px;
+    min-width: 20px;
 }
 
-.content_div {
+#content_div {
     display: flex;
+    flex-direction: column;
+    padding: 10px;
+    max-width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 
 body {
@@ -43,18 +58,29 @@ body {
     animation: slide 10s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    body {
+        animation: none;
+    }
+}
+
 table, p, h1, button {
-    font-family: 'Cactron', sans-serif;
+    font-family: "Fredoka", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
 }
 
 h1 {
     color: #97e7f5;
-    text-shadow: 0.1em 0.1em #34aad1;
+    font-weight: 700;
+    text-shadow: 0.05em 0.05em #34aad1;
 }
 
 header {
     width: 100vw;
-    height: 10vh;
     display: flex;
     align-items: center; /* Vertically center items */
     justify-content: center; /* Vertically center items */
@@ -113,7 +139,8 @@ table {
     border: 5px solid #16437e;
     border-radius: 5px;
     text-align: center;
-    width: 75vw;
+    max-width: 500px;
+    width: 85vw;
 }
 
 img {
