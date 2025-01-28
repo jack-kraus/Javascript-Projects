@@ -3,6 +3,28 @@ import { cn, strokeToScore } from "./data.js";
 
 var debug = false;
 
+function deviceType() {
+    try {
+        document.createEvent("TouchEvent");
+        return "touch";
+    }
+    catch (e) {
+        return "mouse";
+    }
+}
+
+const events = {
+    mouse : {
+        down: "mousedown",
+        move: "mousemove",
+        up: "mouseup"
+    },
+    touch : {
+        down: "touchstart",
+        move: "touchmove",
+        up: "touchend"
+    }
+}
 
 export class Hole {
     constructor (level, x, y, radius) {
@@ -233,6 +255,7 @@ export class App {
         // mouse movement
         this.mouseEnd = undefined;
         this.mouseStart = undefined;
+        this.device = undefined;
 
         // level items
         this.canvas = undefined;
@@ -374,9 +397,10 @@ export class App {
         this.interval = setInterval(this.updateGameArea.bind(this), 20);
 
         // set event listeners
-        $(document).on("mousemove", this.updateMouse.bind(this));
-        $(document).on("mousedown", this.pressMouse.bind(this));
-        $(document).on("mouseup", this.releaseMouse.bind(this));
+        this.device = deviceType();
+        $(this.canvas).on(events[this.device].move, this.updateMouse.bind(this));
+        $(document).on(events[this.device].down, this.pressMouse.bind(this));
+        $(document).on(events[this.device].up, this.releaseMouse.bind(this));
 
         $("#next_level").on("click", this.increment_level.bind(this));
     }
@@ -410,8 +434,14 @@ export class App {
     // Mouse movement
     pressMouse(e) {
         const canvas_bound = this.canvas.getBoundingClientRect();
-        this.mouseStart = new Vector(e.pageX - canvas_bound.left, e.pageY - canvas_bound.top);
-        this.mouseEnd = new Vector(e.pageX - canvas_bound.left, e.pageY - canvas_bound.top);
+
+        const coords = {
+            x : this.device === "mouse" ? e.pageX : e.touches[0].pageX,
+            y : this.device === "mouse" ? e.pageY : e.touches[0].pageY,
+        }
+        e.preventDefault();
+        this.mouseStart = new Vector(coords.x - canvas_bound.left, coords.y - canvas_bound.top);
+        this.mouseEnd = new Vector(coords.x - canvas_bound.left, coords.y - canvas_bound.top);
     }
     updateMouse(e) {
         const canvas_bound = this.canvas.getBoundingClientRect();
@@ -420,8 +450,13 @@ export class App {
         // if (debug) $("body").css("background-color", color);
 
         if (this.mouseStart === undefined) return;
-        this.mouseEnd.x = e.pageX - canvas_bound.left;
-        this.mouseEnd.y = e.pageY - canvas_bound.top;
+        e.preventDefault();
+        const coords = {
+            x : this.device === "mouse" ? e.pageX : e.touches[0].pageX,
+            y : this.device === "mouse" ? e.pageY : e.touches[0].pageY,
+        }
+        this.mouseEnd.x = coords.x - canvas_bound.left;
+        this.mouseEnd.y = coords.y - canvas_bound.top;
     }
     releaseMouse() {
         const diff = this.mouseEnd.difference(this.mouseStart);

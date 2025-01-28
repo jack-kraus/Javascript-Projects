@@ -31,6 +31,7 @@ canvas {
     object-fit: contain;
     filter : brightness(0%);
     max-width: 100%;
+    touch-action: none;
 }
 
 table, th, td {
@@ -146,4 +147,8 @@ table {
 img {
     width: 40px;
     height: 40px;
+}
+
+button {
+    font-weight: 800;
 }
