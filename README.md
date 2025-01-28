@@ -22,3 +22,9 @@ There are 7 holes to play through, with plenty of different mechanics to see.
 * HTML and CSS for basic page layout
 * JavaScript for drawing on HTML5 Canvas as well as game logic
 * JQuery for interacting with the DOM
+
+## Features
+* Works on mobile and desktop
+* Adapts to screen sizes
+* Animated background
+* Level Transitions
