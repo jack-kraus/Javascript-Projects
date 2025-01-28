@@ -310,6 +310,30 @@ export class App {
         this.hole = undefined;
     }
 
+    // what to do when game starts
+    start() {
+        // canvas stuff
+        this.canvas = document.createElement("canvas");
+        $(this.canvas).hide(); // hide canvas at start
+        this.ctx = this.canvas.getContext("2d");
+        $("#content_div").append(this.canvas);
+
+        // load level
+        this.load_level(this.level_number);
+        
+        // set game loop
+        this.interval = setInterval(this.updateGameArea.bind(this), 20);
+
+        // set event listeners
+        this.device = deviceType();
+        $(document).on(events[this.device].move, this.updateMouse.bind(this));
+        $(this.canvas).on(events[this.device].down, this.pressMouse.bind(this));
+        $(document).on(events[this.device].up, this.releaseMouse.bind(this));
+
+        // make button go to next levels
+        $("#next_level").on("click", this.increment_level.bind(this));
+    }
+
     increment_level() {
         // add score to list of scores (unless next hole is first hole)
         if (this.level_number > -1) { this.scores.push(this.strokes - this.par); }
@@ -352,6 +376,8 @@ export class App {
         }
     }
 
+    /* Load Game Objects */
+    
     load_level(level_number) {
         // load current level
         const level_data = this.levels[level_number];
@@ -441,35 +467,13 @@ export class App {
         $(table).append(index_row, score_row);
     }
 
+    /* Game Logic */
+
     // add "amount" to stroke then update 
     increment_stroke(amount) {
         amount = (amount === undefined) ? 1 : amount; // if amount not specified, increment by one
         this.strokes += amount;
         $("#stroke_label").html(`Strokes: ${this.strokes}`); // update stroke label
-    }
-
-    // what to do when game starts
-    start() {
-        // canvas stuff
-        this.canvas = document.createElement("canvas");
-        $(this.canvas).hide(); // hide canvas at start
-        this.ctx = this.canvas.getContext("2d");
-        $("#content_div").append(this.canvas);
-
-        // load level
-        this.load_level(this.level_number);
-        
-        // set game loop
-        this.interval = setInterval(this.updateGameArea.bind(this), 20);
-
-        // set event listeners
-        this.device = deviceType();
-        $(document).on(events[this.device].move, this.updateMouse.bind(this));
-        $(this.canvas).on(events[this.device].down, this.pressMouse.bind(this));
-        $(document).on(events[this.device].up, this.releaseMouse.bind(this));
-
-        // make button go to next levels
-        $("#next_level").on("click", this.increment_level.bind(this));
     }
 
     // clear canvas
@@ -502,6 +506,32 @@ export class App {
         this.ball.draw(); // draw ball
         
     }
+    
+    // when level won
+    finishLevel() {
+        this.won = true;
+        $("#par_label").html(`Completed with a ${strokeToScore(this.strokes, this.par)}`); // set
+        $(this.canvas).css( "filter", "brightness(0)"); // darken stage
+        $("#next_level").prop("disabled", false); // allow next level button to be pressed
+    }
+
+    // check collision in from point pos1 to pos2
+    collision(pos1, pos2) {
+        for (const polygon of this.polygons) {
+            let val = polygon.collision(pos1, pos2);
+            if (val !== undefined) return val;
+        }
+    }
+    
+    // if position is colliding with a sand trap, perform the function
+    event(pos1) {
+        for (const sand_trap of this.sand_traps) {
+            if (sand_trap.collision(pos1)) { sand_trap.func(this); return; }
+        }
+        this.ball.speed.scalar(cn.friction); // apply friction to ball
+    }
+
+    /* Mouse Events */
 
     // Start drag
     pressMouse(e) {
@@ -556,27 +586,4 @@ export class App {
         this.mouseEnd = undefined;
     }
 
-    // when level won
-    finishLevel() {
-        this.won = true;
-        $("#par_label").html(`Completed with a ${strokeToScore(this.strokes, this.par)}`); // set
-        $(this.canvas).css( "filter", "brightness(0)"); // darken stage
-        $("#next_level").prop("disabled", false); // allow next level button to be pressed
-    }
-
-    // check collision in from point pos1 to pos2
-    collision(pos1, pos2) {
-        for (const polygon of this.polygons) {
-            let val = polygon.collision(pos1, pos2);
-            if (val !== undefined) return val;
-        }
-    }
-    
-    // if position is colliding with a sand trap, perform the function
-    event(pos1) {
-        for (const sand_trap of this.sand_traps) {
-            if (sand_trap.collision(pos1)) { sand_trap.func(this); return; }
-        }
-        this.ball.speed.scalar(cn.friction); // apply friction to ball
-    }
 }
