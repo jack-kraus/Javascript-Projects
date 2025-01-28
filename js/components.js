@@ -464,8 +464,8 @@ export class App {
 
         // set event listeners
         this.device = deviceType();
-        $(this.canvas).on(events[this.device].move, this.updateMouse.bind(this));
-        $(document).on(events[this.device].down, this.pressMouse.bind(this));
+        $(document).on(events[this.device].move, this.updateMouse.bind(this));
+        $(this.canvas).on(events[this.device].down, this.pressMouse.bind(this));
         $(document).on(events[this.device].up, this.releaseMouse.bind(this));
 
         // make button go to next levels
