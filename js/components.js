@@ -142,6 +142,7 @@ export class Ball {
         if (this.level.mouseEnd !== undefined && this.level.mouseStart !== undefined && !this.level.won) {
             const end_point = this.level.mouseEnd.difference(this.level.mouseStart); // get vector pointing from start to end point
             end_point.clamp_length(cn.clamp_amount); // clamp to a certain speed
+            end_point.scalar(-1);
             
             // either should be gray if ball is still moving, or colored based on how far it's pulled
             this.ctx.strokeStyle  = this.speed.length() !== 0 ? "gray" : `hsl(${(1 - (end_point.length()-this.radius) / (60-this.radius)) * 100},100%,50%)`;
@@ -394,8 +395,7 @@ export class App {
         $("table").remove(); // remove score table if present
         
         // if ground color not specified, use default green color
-        const ground_color = (level_data.game.color !== undefined) ? "#7ED348" : level_data.game.color;
-        $(this.canvas).css("background-color", ground_color);
+        const ground_color = (level_data.game.color === undefined) ? "var(--green)" : level_data.game.color;
 
         // set canvas properties
         // if currently hidden (i.e. first hole) then expand size from nothing
@@ -405,9 +405,11 @@ export class App {
             $(this.canvas).prop("aspectRatio", level_data.game.width / level_data.game.height);
             $(this.canvas).prop("width", level_data.game.width);
             $(this.canvas).prop("height", level_data.game.height);
+            $(this.canvas).css("background-color", ground_color);
         }
         else {
             // animate from current canvas size to next level's canvas size
+            $(this.canvas).css("background-color", "black");
             const from = { width: $(this.canvas).prop("width"), height: $(this.canvas).prop("height") };
             const to = { width: level_data.game.width, height: level_data.game.height };
             
@@ -418,7 +420,7 @@ export class App {
                     $("canvas").attr("width", this.width);
                     $("canvas").attr("height", this.height);
                 },
-                complete: () => { $("canvas").css( "filter", "brightness(1)"); }
+                complete: () => $("canvas").css("filter", "brightness(1)").css("background-color", ground_color)
             });
 
             $(this.canvas).prop("aspectRatio", level_data.game.width / level_data.game.height);
@@ -499,12 +501,14 @@ export class App {
 
     // do per game step
     updateGameArea() {
+        
         this.clear(); // reset
         this.draw(); // draw self
-        this.ball.update(); // move balls
-        this.hole.draw(); // draw hole
-        this.ball.draw(); // draw ball
-        
+        if (this.ball && this.hole) {
+            this.ball.update(); // move balls
+            this.hole.draw(); // draw hole
+            this.ball.draw(); // draw ball
+        }  
     }
     
     // when level won
@@ -570,13 +574,16 @@ export class App {
 
     // release mouse
     releaseMouse() {
+        // prevent error if either start or end undefined
+        if (this.mouseEnd === undefined || this.mouseStart === undefined) return;
+        
         const diff = this.mouseEnd.difference(this.mouseStart); // get difference vector between start and end
         diff.clamp_length(cn.clamp_amount); // clamp length to max amount
         diff.minus_scalar(this.ball.radius); // subtract the radius of the ball from the vector
        
         // if the ball is currently not moving and the difference is not 0 and the hole isn't over
         if (this.ball.speed.length() === 0 && diff.length() > 0 && !this.won) {
-            diff.scalar(cn.ball_force); // multiply amount by a force to launch the ball
+            diff.scalar(-cn.ball_force); // multiply amount by a force to launch the ball
             this.ball.speed.add(diff); // add force to speed
             this.increment_stroke(); // add one stroke
         }
