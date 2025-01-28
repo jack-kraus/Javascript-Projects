@@ -9,34 +9,6 @@ export const cn = {
     ball_force : 0.6
 }
 
-const old_level_1 = {
-    game : { width : 480, height : 270 },
-    ball : { x : 50, y : 50, radius : 10 },
-    hole : { x : 250, y : 60, radius : 10 },
-    polygons : [
-        { color: "#2e855c", data: [
-                [30, 30],
-                [120, 30],
-                [120, 100],
-                [140, 100],
-                [140, 30],
-                [480 - 60, 30],
-                [480 - 30, 60],
-                [480 - 30, 270 - 30],
-                [30, 270 - 30]
-            ] 
-        },
-        { color: "#2e855c", data: [
-                [350, 60],
-                [375, 60],
-                [375, 120],
-                [350, 120],
-            ] 
-        }
-    ],
-    par : 3
-}
-
 // function to apply friction to the ball
 const fric_func = function(friction) {
     return (level) => { level.ball.speed.scalar(friction); }
@@ -53,6 +25,7 @@ const reset_func = function(penalty) {
     };
 }
 
+// returns array representing a diamond with (x, y) center and (w, h) dimensions
 const diamond = function (x, y, w, h) {
     const hw = w / 2;
     const hh = h / 2;
@@ -64,6 +37,7 @@ const diamond = function (x, y, w, h) {
     ];
 }
 
+// returns array representing a rectangle with (x, y) corner point and (w, h) dimensions
 const rectangle = function(x, y, w, h) {
     return [
         [x, y],
@@ -73,7 +47,7 @@ const rectangle = function(x, y, w, h) {
     ];
 }
 
-
+// Level data
 const level_1 = {
     game : { width : 270, height : 270 },
     ball : { x : 83, y : 188, radius : 10 },
@@ -277,8 +251,10 @@ const level_7 = {
     tip : "Purple walls are sticky"
 }
 
+// array of all levels
 export const levels = [level_1, level_2, level_3, level_4, level_5, level_6, level_7];
 
+// convert number of strokes to a score
 export function strokeToScore(strokes, par) {
     if (strokes === 1) return "Hole in One"
     switch (strokes - par) {

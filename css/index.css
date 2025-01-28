@@ -21,7 +21,7 @@
     100% {
         background-position: 512px 256px;
     }
-  }
+}
 
 canvas {
     transition: filter 1s;
