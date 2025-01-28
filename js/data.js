@@ -65,7 +65,7 @@ const level_1 = {
         ]}
     ],
     par : 2,
-    tip : "Get the ball in the hole in as few strokes as possible, drag and release to shoot"
+    tip : "Get the ball in the hole in as few strokes as possible, drag and release on the game area to shoot"
 }
 
 const level_2 = {
